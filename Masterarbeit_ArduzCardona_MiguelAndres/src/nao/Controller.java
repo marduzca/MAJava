@@ -29,6 +29,7 @@ public class Controller {
 	private ALTextToSpeech textToSpeech;
 	private ALRobotPosture robotPosture;
 
+	//Random test comment
 	public Controller() {
 		server = new NaoServer(this);
 		SERVER_ACTIVE = true;
