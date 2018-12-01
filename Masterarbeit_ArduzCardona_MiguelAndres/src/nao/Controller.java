@@ -7,7 +7,6 @@ import java.util.List;
 
 import com.aldebaran.qi.CallError;
 import com.aldebaran.qi.Future;
-import com.aldebaran.qi.helper.proxies.ALAnimatedSpeech;
 import com.aldebaran.qi.helper.proxies.ALMemory;
 import com.aldebaran.qi.helper.proxies.ALMotion;
 import com.aldebaran.qi.helper.proxies.ALRobotPosture;
@@ -338,7 +337,7 @@ public class Controller {
 
 	public static void main(String[] args) {
 		Controller controller = new Controller();
-		controller.initialize(NAOMI_IP);
+		//controller.initialize(NAOMI_IP);
 		controller.startServer();
 	}
 }
