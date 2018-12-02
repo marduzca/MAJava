@@ -52,8 +52,10 @@ public class Controller {
 			arms = new Arms();
 			legs = new Legs();
 			
+			//disableAutonomousLife and wakeUp
 			robotPosture.applyPosture("Stand", 0.5f);
-
+			
+			
 //			
 //			
 //
@@ -148,27 +150,18 @@ public class Controller {
 			float wx = Float.parseFloat(command[7]);
 			float wy = Float.parseFloat(command[5]);
 			float wz = Float.parseFloat(command[6]);
-			
+
 			List<Float> newPosition6D = new ArrayList<Float>();
 
 			newPosition6D = scaleArm6DPosition(side, x, y, z, wx, wy, wz);
-			
-//			try {
-				if(side.equals("L")) {
-					System.out.println("LArm: " + newPosition6D.toString());
-					motion.positionInterpolation("LArm", 2, newPosition6D, 63, 1.0, true);
-				}
-				else if(side.equals("R")) {
-					System.out.println("RArm: " + newPosition6D.toString());
-					//motion.positionInterpolation("RArm", 2, newPosition6D, 63, 1.0, true);
-				}
-//			} catch (CallError e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
+
+			if (side.equals("L")) {
+				System.out.println("LArm: " + newPosition6D.toString());
+				motion.positionInterpolation("LArm", 2, newPosition6D, 63, 1.0, true);
+			} else if (side.equals("R")) {
+				System.out.println("RArm: " + newPosition6D.toString());
+				motion.positionInterpolation("RArm", 2, newPosition6D, 63, 1.0, true);
+			}
 			
 			break;
 
@@ -304,6 +297,16 @@ public class Controller {
 		}
 	}
 	
+	public void testMethod() {
+		//DELETE LATER
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * Gets the current angles of the assigned joint. Done very often in the code,
 	 * so to spare us some lines.
@@ -337,7 +340,7 @@ public class Controller {
 
 	public static void main(String[] args) {
 		Controller controller = new Controller();
-		//controller.initialize(NAOMI_IP);
+		controller.initialize(NAOMI_IP);
 		controller.startServer();
 	}
 }

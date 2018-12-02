@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.regex.Pattern;
 
 public class NaoServer extends Thread{
 	
@@ -80,7 +81,7 @@ public class NaoServer extends Thread{
 					command = command.trim();
 
 					System.out.println("Received: " + command);
-					//controller.runCommand(command.split(Pattern.quote("|")));
+					controller.runCommand(command.split(Pattern.quote("|")));
 					command = "";
 				}
 
