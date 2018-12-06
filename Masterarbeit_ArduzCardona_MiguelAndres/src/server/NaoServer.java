@@ -1,4 +1,4 @@
-package nao;
+package server;
 
 import static utils.GlobalVariables.SERVER_ACTIVE;
 
@@ -9,6 +9,8 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.regex.Pattern;
+
+import nao.Controller;
 
 public class NaoServer extends Thread{
 	
