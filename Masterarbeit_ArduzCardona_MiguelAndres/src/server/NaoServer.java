@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 import nao.Controller;
 
-public class NaoServer extends Thread{
+public class NaoServer {
 	
 	private Controller controller;
 	private int port;
@@ -55,7 +55,6 @@ public class NaoServer extends Thread{
 	}
 	*/
 	
-	@Override
 	public void run() {
 		try {
 			serverSocket = new ServerSocket(port);
@@ -75,21 +74,26 @@ public class NaoServer extends Thread{
 				
 				System.out.println("Streams created...");
 
-//		        while ( (command = inFromClient.readLine()) != null ) {
-//		            System.out.println(command);
-//		        }
-
 				while ((command = inFromClient.readLine()) != null) {
 					command = command.trim();
 
 					System.out.println("Received: " + command);
 					controller.runCommand(command.split(Pattern.quote("|")));
 					command = "";
+					System.out.println("LINE DONE");
 				}
+				
+				System.out.println("NO MORE LINES");
 
 				connectionSocket.close();
+				
+				System.out.println("SOCKET CLOSED");
+
 
 			}
+			
+			System.out.println("OUT OF WHILE");
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (Exception e) {

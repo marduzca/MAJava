@@ -21,28 +21,31 @@ import nao.Controller;
 public class Arms {
 	
 	private Controller controller;
-	private ALMotion motion;
-	private List<List<Float>> leftArmCommands;
-	private List<List<Float>> rightArmCommands;
+	protected static ALMotion motion;
+	protected static List<List<Float>> leftArmCommands = new ArrayList<List<Float>>();;
+	protected static List<List<Float>> rightArmCommands = new ArrayList<List<Float>>();;
+	private LeftArmThread leftArmThread;
+	private RightArmThread rightArmThread;
 
 	public Arms(Controller controller, ALMotion motion) {
 		this.controller = controller;
-		this.motion = motion;
+		Arms.motion = motion;
+		this.leftArmThread = new LeftArmThread();
+		this.rightArmThread = new RightArmThread();
+		
+		this.leftArmThread.start();
+		this.rightArmThread.start();
 	}
 	
 	public void moveArm(String side, float x, float y, float z, float wx, float wy, float wz) throws CallError, InterruptedException {
 		List<Float> newPosition6D = scaleArm6DPosition(side, x, y, z, wx, wy, wz);
-
+		
 		if (side.equals("L")) {
 			System.out.println("LArm: " + newPosition6D.toString());
 			leftArmCommands.add(newPosition6D);
-			
-			motion.positionInterpolation("LArm", 2, newPosition6D, 63, 1.0, true);
 		} else if (side.equals("R")) {
 			System.out.println("RArm: " + newPosition6D.toString());
 			rightArmCommands.add(newPosition6D);
-
-			motion.positionInterpolation("RArm", 2, newPosition6D, 63, 1.0, true);
 		}
 	}
 	

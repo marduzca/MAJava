@@ -16,6 +16,7 @@ public class GlobalVariables {
 	public static final String LOCAL = "tcp://127.0.0.1:9559";
 
 	public static boolean SERVER_ACTIVE;
+	public static boolean ARM_MOVEMENT_ACTIVE;
 	
 	public static final Float VR_LIMIT_X = 0.56f;
 	public static final Float VR_LIMIT_Y = 0.81f;

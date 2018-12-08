@@ -1,11 +1,23 @@
 package naoArms;
 
-public class LeftArmThread extends Thread{
+import static utils.GlobalVariables.ARM_MOVEMENT_ACTIVE;
+
+import com.aldebaran.qi.CallError;
+
+public class LeftArmThread extends Thread {
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		super.run();
+		try {
+			while (ARM_MOVEMENT_ACTIVE) {
+				if (!Arms.leftArmCommands.isEmpty()) {
+					Arms.motion.positionInterpolation("LArm", 2, Arms.leftArmCommands.remove(0), 63, 1.0, true);
+				}
+			}
+		} catch (CallError | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 }

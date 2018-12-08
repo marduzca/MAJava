@@ -36,10 +36,12 @@ public class Controller {
 	public Controller() {
 		server = new NaoServer(this);
 		SERVER_ACTIVE = true;
+		ARM_MOVEMENT_ACTIVE = true;
 	}
 
 	private void startServer() {
-		server.start();
+		//server.start();
+		server.run();
 	}
 
 	private void initialize(String IP_Address) {
@@ -62,7 +64,7 @@ public class Controller {
 				motion.wakeUp();
 			}
 
-			robotPosture.applyPosture("Stand", 0.5f);
+			robotPosture.applyPosture("Stand", 0.5f);		
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -76,7 +78,9 @@ public class Controller {
 			break;
 
 		case "MOV":
+			//Deactivate arm movement flag and clear list 
 			motion.moveTo(Float.parseFloat(command[1]), Float.parseFloat(command[3]), 0.0f);
+			//Turn arm movement back on
 			break;
 
 		case "ARM":
@@ -111,7 +115,8 @@ public class Controller {
 
 		case "STP":
 			SERVER_ACTIVE = false;
-			server.join();
+			ARM_MOVEMENT_ACTIVE = false;
+			//server.join();
 			break;
 
 		default:
@@ -151,8 +156,18 @@ public class Controller {
 	}
 
 	public static void main(String[] args) {
-		Controller controller = new Controller();
-		controller.initialize(NAOMI_IP);
-		//controller.startServer();
+		try {
+			Controller controller = new Controller();
+			controller.initialize(NAOMI_IP);
+			controller.startServer();
+			System.out.println(Thread.currentThread().getState());
+		} catch (Throwable ex) {
+			System.err.println("Uncaught exception - " + ex.getMessage());
+			ex.printStackTrace(System.err);
+		}
+		finally {
+			System.out.println("This Thread died: " + Thread.currentThread().getState());
+		}
+
 	}
 }
