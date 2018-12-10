@@ -1,6 +1,7 @@
 package naoArms;
 
 import static utils.GlobalVariables.ARM_MOVEMENT_ACTIVE;
+import static utils.GlobalVariables.WALK_MOVEMENT_ACTIVE;
 
 import com.aldebaran.qi.CallError;
 
@@ -15,7 +16,6 @@ public class LeftArmThread extends Thread {
 				}
 			}
 		} catch (CallError | InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

@@ -1,10 +1,11 @@
 package naoArms;
 
 import static utils.GlobalVariables.ARM_MOVEMENT_ACTIVE;
+import static utils.GlobalVariables.WALK_MOVEMENT_ACTIVE;
 
 import com.aldebaran.qi.CallError;
 
-public class RightArmThread extends Thread{
+public class RightArmThread extends Thread {
 
 	@Override
 	public void run() {
@@ -15,9 +16,7 @@ public class RightArmThread extends Thread{
 				}
 			}
 		} catch (CallError | InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
 }

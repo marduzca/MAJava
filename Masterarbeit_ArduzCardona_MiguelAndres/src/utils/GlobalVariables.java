@@ -17,6 +17,7 @@ public class GlobalVariables {
 
 	public static boolean SERVER_ACTIVE;
 	public static boolean ARM_MOVEMENT_ACTIVE;
+	public static boolean WALK_MOVEMENT_ACTIVE;
 	
 	public static final Float VR_LIMIT_X = 0.56f;
 	public static final Float VR_LIMIT_Y = 0.81f;
@@ -28,4 +29,7 @@ public class GlobalVariables {
 	public static final Float NAO_POSITIVELIMIT_Z = 0.17f;
 	public static final Float NAO_NEGATIVELIMIT_Z = 0.27f;
 	public static final Float NAO_CENTERPOINT_Z = 0.48f;
+	
+	public static final float USER_HEIGHT = 1.72f;
+	public static final float NAO_HEIGHT = 0.58f;
 }

@@ -1,12 +1,15 @@
 package nao;
 
-import com.aldebaran.qi.Session;
+import static utils.GlobalVariables.ARM_MOVEMENT_ACTIVE;
+import static utils.GlobalVariables.NAOMI_IP;
+import static utils.GlobalVariables.SERVER_ACTIVE;
+import static utils.GlobalVariables.WALK_MOVEMENT_ACTIVE;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.aldebaran.qi.CallError;
 import com.aldebaran.qi.Future;
+import com.aldebaran.qi.Session;
 import com.aldebaran.qi.helper.proxies.ALAutonomousLife;
 import com.aldebaran.qi.helper.proxies.ALMemory;
 import com.aldebaran.qi.helper.proxies.ALMotion;
@@ -16,8 +19,6 @@ import com.aldebaran.qi.helper.proxies.ALTextToSpeech;
 import naoArms.Arms;
 import naoLegs.Legs;
 import server.NaoServer;
-
-import static utils.GlobalVariables.*;
 
 public class Controller {
 
@@ -32,7 +33,7 @@ public class Controller {
 	private ALRobotPosture robotPosture;
 	private ALAutonomousLife autonomousLife;
 
-	//Random test comment
+	// Random test comment
 	public Controller() {
 		server = new NaoServer(this);
 		SERVER_ACTIVE = true;
@@ -40,7 +41,7 @@ public class Controller {
 	}
 
 	private void startServer() {
-		//server.start();
+		// server.start();
 		server.run();
 	}
 
@@ -57,15 +58,14 @@ public class Controller {
 			autonomousLife = new ALAutonomousLife(session);
 
 			arms = new Arms(this, motion);
-			legs = new Legs();
-			
-			if(!autonomousLife.getState().equals("disabled")) {
+			legs = new Legs(this, motion);
+
+			if (!autonomousLife.getState().equals("disabled")) {
 				autonomousLife.setState("disabled");
 				motion.wakeUp();
 			}
 
-			robotPosture.applyPosture("Stand", 0.5f);		
-			
+			robotPosture.applyPosture("Stand", 0.5f);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -78,22 +78,27 @@ public class Controller {
 			break;
 
 		case "MOV":
-			//Deactivate arm movement flag and clear list 
-			motion.moveTo(Float.parseFloat(command[1]), Float.parseFloat(command[3]), 0.0f);
-			//Turn arm movement back on
+			float walkX = Float.parseFloat(command[2]);
+			float walkY = Float.parseFloat(command[1]);
+
+			WALK_MOVEMENT_ACTIVE = true;
+			arms.clearArmCommandsList();
+			legs.walkTo(walkX, walkY);
+			WALK_MOVEMENT_ACTIVE = false;
+
 			break;
 
 		case "ARM":
-			String side = command[1];
-			float x = Float.parseFloat(command[4]);
-			float y = Float.parseFloat(command[2]);
-			float z = Float.parseFloat(command[3]);
-			float wx = Float.parseFloat(command[7]);
-			float wy = Float.parseFloat(command[5]);
-			float wz = Float.parseFloat(command[6]);
+			String armSide = command[1];
+			float armX = Float.parseFloat(command[4]);
+			float armY = Float.parseFloat(command[2]);
+			float armZ = Float.parseFloat(command[3]);
+			float armWX = Float.parseFloat(command[7]);
+			float armWY = Float.parseFloat(command[5]);
+			float armWZ = Float.parseFloat(command[6]);
 
-			arms.moveArm(side, x, y, z, wx, wy, wz);
-			
+			arms.moveArm(armSide, armX, armY, armZ, armWX, armWY, armWZ);
+
 			break;
 
 		case "OPH":
@@ -116,14 +121,14 @@ public class Controller {
 		case "STP":
 			SERVER_ACTIVE = false;
 			ARM_MOVEMENT_ACTIVE = false;
-			//server.join();
+			// server.join();
 			break;
 
 		default:
 			throw new Exception("Non existent control command");
 		}
 	}
-	
+
 	/**
 	 * Gets the current angles of the assigned joint. Done very often in the code,
 	 * so to spare us some lines.
@@ -152,7 +157,7 @@ public class Controller {
 	private float toFloatRadians(double degree) {
 
 		return (float) Math.toRadians(degree);
-		
+
 	}
 
 	public static void main(String[] args) {
@@ -164,8 +169,7 @@ public class Controller {
 		} catch (Throwable ex) {
 			System.err.println("Uncaught exception - " + ex.getMessage());
 			ex.printStackTrace(System.err);
-		}
-		finally {
+		} finally {
 			System.out.println("This Thread died: " + Thread.currentThread().getState());
 		}
 
