@@ -11,7 +11,7 @@ public class LeftArmThread extends Thread {
 	public void run() {
 		try {
 			while (ARM_MOVEMENT_ACTIVE) {
-				if (!Arms.leftArmCommands.isEmpty()) {
+				if (!WALK_MOVEMENT_ACTIVE && !Arms.leftArmCommands.isEmpty()) {
 					Arms.motion.positionInterpolation("LArm", 2, Arms.leftArmCommands.remove(0), 63, 1.0, true);
 				}
 			}

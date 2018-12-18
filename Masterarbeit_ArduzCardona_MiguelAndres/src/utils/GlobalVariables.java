@@ -32,4 +32,12 @@ public class GlobalVariables {
 	
 	public static final float USER_HEIGHT = 1.72f;
 	public static final float NAO_HEIGHT = 0.58f;
+	
+	//Input commands
+	public static final String INITIALIZE = "INI";
+	public static final String MOVE = "MOV";
+	public static final String ARM = "ARM";
+	public static final String HAND = "HND";
+	public static final String TURN = "TRN";
+	public static final String STOP = "STP";
 }

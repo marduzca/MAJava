@@ -68,6 +68,9 @@ public class NaoServer {
 					System.out.println("Received: " + command);
 					controller.runCommand(command.split(Pattern.quote("|")));
 					command = "";
+					
+					//Send back ACK
+					outToClient.writeByte(1);
 				}
 				connectionSocket.close();
 			}

@@ -11,7 +11,7 @@ public class RightArmThread extends Thread {
 	public void run() {
 		try {
 			while (ARM_MOVEMENT_ACTIVE) {
-				if (!Arms.rightArmCommands.isEmpty()) {
+				if (!WALK_MOVEMENT_ACTIVE && !Arms.rightArmCommands.isEmpty()) {
 					Arms.motion.positionInterpolation("RArm", 2, Arms.rightArmCommands.remove(0), 63, 1.0, true);
 				}
 			}

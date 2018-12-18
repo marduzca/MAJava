@@ -1,12 +1,15 @@
 package nao;
 
+import static utils.GlobalVariables.ARM;
 import static utils.GlobalVariables.ARM_MOVEMENT_ACTIVE;
+import static utils.GlobalVariables.HAND;
+import static utils.GlobalVariables.INITIALIZE;
+import static utils.GlobalVariables.MOVE;
 import static utils.GlobalVariables.NAOMI_IP;
 import static utils.GlobalVariables.SERVER_ACTIVE;
+import static utils.GlobalVariables.STOP;
+import static utils.GlobalVariables.TURN;
 import static utils.GlobalVariables.WALK_MOVEMENT_ACTIVE;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import com.aldebaran.qi.Future;
 import com.aldebaran.qi.Session;
@@ -32,6 +35,12 @@ public class Controller {
 	private ALTextToSpeech textToSpeech;
 	private ALRobotPosture robotPosture;
 	private ALAutonomousLife autonomousLife;
+	
+	public static void main(String[] args) {
+		Controller controller = new Controller();
+		controller.initialize(NAOMI_IP);
+		controller.startServer();
+}
 
 	// Random test comment
 	public Controller() {
@@ -58,7 +67,7 @@ public class Controller {
 			autonomousLife = new ALAutonomousLife(session);
 
 			arms = new Arms(this, motion);
-			legs = new Legs(this, motion);
+			legs = new Legs(this, motion, robotPosture);
 
 			if (!autonomousLife.getState().equals("disabled")) {
 				autonomousLife.setState("disabled");
@@ -73,22 +82,23 @@ public class Controller {
 
 	public void runCommand(String[] command) throws Exception {
 		switch (command[0]) {
-		case "INI":
+		case INITIALIZE:
 			initialize("tcp://" + command[1] + ":9559");
 			break;
 
-		case "MOV":
+		case MOVE:
 			float walkX = Float.parseFloat(command[2]);
 			float walkY = Float.parseFloat(command[1]);
 
 			WALK_MOVEMENT_ACTIVE = true;
+			// Clear old and unused arm commands
 			arms.clearArmCommandsList();
+
 			legs.walkTo(walkX, walkY);
 			WALK_MOVEMENT_ACTIVE = false;
-
 			break;
 
-		case "ARM":
+		case ARM:
 			String armSide = command[1];
 			float armX = Float.parseFloat(command[4]);
 			float armY = Float.parseFloat(command[2]);
@@ -98,27 +108,27 @@ public class Controller {
 			float armWZ = Float.parseFloat(command[6]);
 
 			arms.moveArm(armSide, armX, armY, armZ, armWX, armWY, armWZ);
-
 			break;
 
-		case "OPH":
-			if (command[1].equals("true")) {
-				// Open hand
-				List<Float> handL = getAnglesFrom("LHand");
-				handL.set(0, handL.get(0) - toFloatRadians(-70));
-				motion.setAngles("LHand", handL, 0.3f);
+		case HAND:
+			String handSide = command[1];
+			String handAction = command[2];
 
-			} else if (command[1].equals("false")) {
-				// Close hand
-				List<Float> handL = getAnglesFrom("LHand");
-				handL = getAnglesFrom("LHand");
-				handL.set(0, handL.get(0) - toFloatRadians(50));
-				motion.setAngles("LHand", handL, 0.3f);
-
-			}
+			arms.moveHand(handSide, handAction);
 			break;
 
-		case "STP":
+		case TURN:
+			float turnTheta = Float.parseFloat(command[1]);
+
+			WALK_MOVEMENT_ACTIVE = true;
+			// Clear old and unused arm commands
+			arms.clearArmCommandsList();
+
+			legs.turnTo(turnTheta);
+			WALK_MOVEMENT_ACTIVE = false;
+			break;
+
+		case STOP:
 			SERVER_ACTIVE = false;
 			ARM_MOVEMENT_ACTIVE = false;
 			// server.join();
@@ -127,51 +137,5 @@ public class Controller {
 		default:
 			throw new Exception("Non existent control command");
 		}
-	}
-
-	/**
-	 * Gets the current angles of the assigned joint. Done very often in the code,
-	 * so to spare us some lines.
-	 * 
-	 * @param joint - Joint we need to get the angles from.
-	 * @return List with the current angles of the joint.
-	 */
-	private List<Float> getAnglesFrom(String joint) {
-		List<Float> anglesList = new ArrayList<Float>();
-
-		try {
-			anglesList = motion.getAngles(joint, true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return anglesList;
-	}
-
-	/**
-	 * Converts an angle from degrees to radians
-	 * 
-	 * @param degree - Degree to be transformed
-	 * @return Same degree in radians
-	 */
-	private float toFloatRadians(double degree) {
-
-		return (float) Math.toRadians(degree);
-
-	}
-
-	public static void main(String[] args) {
-		try {
-			Controller controller = new Controller();
-			controller.initialize(NAOMI_IP);
-			controller.startServer();
-			System.out.println(Thread.currentThread().getState());
-		} catch (Throwable ex) {
-			System.err.println("Uncaught exception - " + ex.getMessage());
-			ex.printStackTrace(System.err);
-		} finally {
-			System.out.println("This Thread died: " + Thread.currentThread().getState());
-		}
-
 	}
 }

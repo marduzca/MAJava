@@ -17,20 +17,25 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import com.aldebaran.qi.CallError;
 import com.aldebaran.qi.helper.proxies.ALMotion;
 
+import utils.Util;
+
 import nao.Controller;
 
 public class Arms {
 
 	private Controller controller;
 	protected static ALMotion motion;
-	protected static CopyOnWriteArrayList<List<Float>> leftArmCommands = new CopyOnWriteArrayList<List<Float>>();;
-	protected static CopyOnWriteArrayList<List<Float>> rightArmCommands = new CopyOnWriteArrayList<List<Float>>();;
+	protected static CopyOnWriteArrayList<List<Float>> leftArmCommands;
+	protected static CopyOnWriteArrayList<List<Float>> rightArmCommands;
 	private LeftArmThread leftArmThread;
 	private RightArmThread rightArmThread;
 
 	public Arms(Controller controller, ALMotion motion) {
 		this.controller = controller;
 		Arms.motion = motion;
+		leftArmCommands = new CopyOnWriteArrayList<List<Float>>();
+		rightArmCommands = new CopyOnWriteArrayList<List<Float>>();
+
 		this.leftArmThread = new LeftArmThread();
 		this.rightArmThread = new RightArmThread();
 
@@ -38,14 +43,48 @@ public class Arms {
 		this.rightArmThread.start();
 	}
 
-	public void moveArm(String side, float x, float y, float z, float wx, float wy, float wz)
-			throws CallError, InterruptedException {
-		List<Float> newPosition6D = scaleArm6DPosition(side, x, y, z, wx, wy, wz);
+	public void moveHand(String handSide, String handAction) throws CallError, InterruptedException {
+		List<Float> handAngles = new ArrayList<>();
+		
+		if (handSide.equals("L")) {
 
-		if (side.equals("L")) {
+			handAngles = Util.getAnglesFrom("LHand", motion);
+
+			if (handAction.equals("open")) {
+				// Open hand
+				handAngles.set(0, handAngles.get(0) - Util.toFloatRadians(-70));
+				motion.setAngles("LHand", handAngles, 0.3f);
+			} else {
+				// Close hand
+				handAngles.set(0, handAngles.get(0) - Util.toFloatRadians(50));
+				motion.setAngles("LHand", handAngles, 0.3f);
+			}
+
+		} else if (handSide.equals("R")) {
+
+			handAngles = Util.getAnglesFrom("RHand", motion);
+
+			if (handAction.equals("open")) {
+				// Open hand
+				handAngles.set(0, handAngles.get(0) - Util.toFloatRadians(-70));
+				motion.setAngles("RHand", handAngles, 0.3f);
+			} else {
+				// Close hand
+				handAngles = Util.getAnglesFrom("RHand", motion);
+				handAngles.set(0, handAngles.get(0) - Util.toFloatRadians(50));
+				motion.setAngles("RHand", handAngles, 0.3f);
+			}
+		}		
+	}
+
+	public void moveArm(String handSide, float x, float y, float z, float wx, float wy, float wz)
+			throws CallError, InterruptedException {
+		List<Float> newPosition6D = scaleArm6DPosition(handSide, x, y, z, wx, wy, wz);
+
+		if (handSide.equals("L")) {
 			leftArmCommands.add(newPosition6D);
 			System.out.println("LArm: " + newPosition6D.toString());
-		} else if (side.equals("R")) {
+		} else if (handSide.equals("R")) {
 			rightArmCommands.add(newPosition6D);
 			System.out.println("RArm: " + newPosition6D.toString());
 		}
@@ -105,9 +144,9 @@ public class Arms {
 		position6D.add(newX);
 		position6D.add(newY);
 		position6D.add(newZ);
-		position6D.add(toFloatRadians(newWX));
-		position6D.add(toFloatRadians(newWY));
-		position6D.add(toFloatRadians(newWZ));
+		position6D.add(Util.toFloatRadians(newWX));
+		position6D.add(Util.toFloatRadians(newWY));
+		position6D.add(Util.toFloatRadians(newWZ));
 
 		return position6D;
 	}
@@ -115,17 +154,5 @@ public class Arms {
 	public void clearArmCommandsList() {
 		leftArmCommands.clear();
 		rightArmCommands.clear();
-	}
-
-	/**
-	 * Converts an angle from degrees to radians
-	 * 
-	 * @param degree - Degree to be transformed
-	 * @return Same degree in radians
-	 */
-	private float toFloatRadians(double degree) {
-
-		return (float) Math.toRadians(degree);
-
 	}
 }
