@@ -26,27 +26,20 @@ public class Legs {
 		this.robotPosture = robotPosture;
 	}
 
-	public void walkTo(float x, float y) {
-		try {
-			robotPosture.applyPosture("StandInit", 0.7f);
-			float[] walkingCoordinates = scaleWalkingCoordinates(x, y);
-			x = walkingCoordinates[0];
-			y = walkingCoordinates[1];
+	public void walkTo(float x, float y) throws CallError, InterruptedException {
+		robotPosture.applyPosture("StandInit", 0.7f);
+		float[] walkingCoordinates = scaleWalkingCoordinates(x, y);
+		x = walkingCoordinates[0];
+		y = walkingCoordinates[1];
 
-			motion.moveTo(x, y, 0f);
-			System.out.println("MoveTo: " + x + ", " + y);
-		} catch (CallError | InterruptedException e) {
-			e.printStackTrace();
-		}
+		motion.moveTo(x, y, 0f);
+		System.out.println("MoveTo: " + x + ", " + y);
 	}
 
-	public void turnTo(float turnTheta) {
-		try {
-			robotPosture.applyPosture("StandInit", 0.7f);
-			motion.moveTo(0f, 0f, Util.toFloatRadians(turnTheta));
-		} catch (CallError | InterruptedException e) {
-			e.printStackTrace();
-		}
+	public void turnTo(float turnTheta) throws CallError, InterruptedException {
+
+		robotPosture.applyPosture("StandInit", 0.7f);
+		motion.moveTo(0f, 0f, Util.toFloatRadians(turnTheta));
 	}
 
 	private float[] scaleWalkingCoordinates(float x, float y) {
