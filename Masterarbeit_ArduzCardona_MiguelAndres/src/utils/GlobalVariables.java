@@ -13,7 +13,6 @@ public class GlobalVariables {
 	public static final String NAOMI_IP = "tcp://192.168.1.143:9559";
 	public static final String NAOEL_IP = "tcp://192.168.1.108:9559";
 	public static final String NAOLINA_IP = "tcp://192.168.1.113:9559";
-	public static final String LOCAL = "tcp://127.0.0.1:9559";
 
 	public static boolean SERVER_ACTIVE;
 	public static boolean ARM_MOVEMENT_ACTIVE;

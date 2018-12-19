@@ -39,8 +39,8 @@ public class Controller {
 	public static void main(String[] args) {
 		Controller controller = new Controller();
 		controller.initialize(NAOMI_IP);
-		controller.startServer();
-}
+		//controller.startServer();
+	}
 
 	// Random test comment
 	public Controller() {
@@ -75,6 +75,11 @@ public class Controller {
 			}
 
 			robotPosture.applyPosture("Stand", 0.5f);
+			
+			textToSpeech.say("IT WORKED");
+			
+			SERVER_ACTIVE = false;
+			ARM_MOVEMENT_ACTIVE = false;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
