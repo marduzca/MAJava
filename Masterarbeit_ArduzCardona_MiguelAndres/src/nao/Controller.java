@@ -10,6 +10,7 @@ import static utils.GlobalVariables.SERVER_ACTIVE;
 import static utils.GlobalVariables.STOP;
 import static utils.GlobalVariables.TURN;
 import static utils.GlobalVariables.WALK_MOVEMENT_ACTIVE;
+import static utils.GlobalVariables.*;
 
 import com.aldebaran.qi.Future;
 import com.aldebaran.qi.Session;
@@ -22,6 +23,7 @@ import com.aldebaran.qi.helper.proxies.ALTextToSpeech;
 import naoArms.Arms;
 import naoLegs.Legs;
 import server.NaoServer;
+import utils.GlobalVariables;
 
 public class Controller {
 
@@ -38,8 +40,8 @@ public class Controller {
 	
 	public static void main(String[] args) {
 		Controller controller = new Controller();
-		controller.initialize(NAOMI_IP);
-		//controller.startServer();
+		//controller.initialize(NAOMI_IP);
+		controller.startServer();
 	}
 
 	// Random test comment
@@ -76,10 +78,7 @@ public class Controller {
 
 			robotPosture.applyPosture("Stand", 0.5f);
 			
-			textToSpeech.say("IT WORKED");
-			
-			SERVER_ACTIVE = false;
-			ARM_MOVEMENT_ACTIVE = false;
+			System.out.println("Limit x: " + VR_LIMIT_X + "\nLimit y: " + VR_LIMIT_Y + "\nLimit posi z: " + VR_POSITIVELIMIT_Z + "\nLimit nega z" + VR_NEGATIVELIMIT_Z + "\nHeight: " + USER_HEIGHT);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -88,7 +87,14 @@ public class Controller {
 	public void runCommand(String[] command) throws Exception {
 		switch (command[0]) {
 		case INITIALIZE:
-			initialize("tcp://" + command[1] + ":9559");
+			String robotIPAddress = command[1];
+			VR_LIMIT_X = Float.parseFloat(command[5]);
+			VR_LIMIT_Y = Float.parseFloat(command[2]);
+			VR_POSITIVELIMIT_Z = Float.parseFloat(command[3]);
+			VR_NEGATIVELIMIT_Z = Float.parseFloat(command[4]) * -1;
+			USER_HEIGHT = Float.parseFloat(command[6]);
+			
+			initialize("tcp://" + robotIPAddress + ":9559");
 			break;
 
 		case MOVE:
@@ -134,6 +140,7 @@ public class Controller {
 			break;
 
 		case STOP:
+			robotPosture.applyPosture("Stand", 0.5f);
 			SERVER_ACTIVE = false;
 			ARM_MOVEMENT_ACTIVE = false;
 			// server.join();

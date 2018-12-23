@@ -23,27 +23,6 @@ public class NaoServer {
 		port = 9876;
 		System.out.println("Server started...");
 	}
-	/*
-	 * @Override public void run() { try { DatagramSocket serverSocket = new
-	 * DatagramSocket(port);
-	 * 
-	 * byte[] receiveData = new byte[1024]; String command = "";
-	 * 
-	 * while (GlobalVariables.SERVER_ACTIVE) { DatagramPacket receivePacket = new
-	 * DatagramPacket(receiveData, receiveData.length);
-	 * 
-	 * serverSocket.receive(receivePacket);
-	 * 
-	 * command = new String(receivePacket.getData()); command = command.trim();
-	 * 
-	 * System.out.println("Received: " + command);
-	 * controller.runCommand(command.split(Pattern.quote("|"))); command = ""; }
-	 * 
-	 * serverSocket.close();
-	 * 
-	 * } catch (IOException ioe) { ioe.printStackTrace(); } catch (Exception e) {
-	 * e.printStackTrace(); } }
-	 */
 
 	public void run() {
 		try {
@@ -66,12 +45,28 @@ public class NaoServer {
 					command = command.trim();
 
 					System.out.println("Received: " + command);
-					controller.runCommand(command.split(Pattern.quote("|")));
-					command = "";
+					String[] commandArray = command.split(Pattern.quote("|"));
 					
-					//Send back ACK
-					outToClient.writeByte(1);
+					if(commandArray[0].equals("INI")) {
+						controller.runCommand(commandArray);
+						//Send back ACK
+						outToClient.writeByte(1);
+					}
+					if(commandArray[0].equals("STP")) {
+						//Send back ACK
+						outToClient.writeByte(1);
+						controller.runCommand(commandArray);
+						break;
+					}
+					else {
+						//Send back ACK
+						outToClient.writeByte(1);
+						controller.runCommand(commandArray);
+					}
+					
+					command = "";
 				}
+
 				connectionSocket.close();
 			}
 		} catch (IOException e) {

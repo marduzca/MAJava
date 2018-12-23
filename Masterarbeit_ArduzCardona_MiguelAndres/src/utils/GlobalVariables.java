@@ -18,18 +18,18 @@ public class GlobalVariables {
 	public static boolean ARM_MOVEMENT_ACTIVE;
 	public static boolean WALK_MOVEMENT_ACTIVE;
 	
-	public static final Float VR_LIMIT_X = 0.56f;
-	public static final Float VR_LIMIT_Y = 0.81f;
-	public static final Float VR_POSITIVELIMIT_Z = 0.46f;
-	public static final Float VR_NEGATIVELIMIT_Z = 0.90f;
+	public static float VR_LIMIT_X = 0.56f;
+	public static float VR_LIMIT_Y = 0.81f;
+	public static float VR_POSITIVELIMIT_Z = 0.46f;
+	public static float VR_NEGATIVELIMIT_Z = 0.90f;
 	
-	public static final Float NAO_LIMIT_X = 0.21f;
-	public static final Float NAO_LIMIT_Y = 0.32f;
-	public static final Float NAO_POSITIVELIMIT_Z = 0.17f;
-	public static final Float NAO_NEGATIVELIMIT_Z = 0.27f;
-	public static final Float NAO_CENTERPOINT_Z = 0.48f;
+	public static final float NAO_LIMIT_X = 0.21f;
+	public static final float NAO_LIMIT_Y = 0.32f;
+	public static final float NAO_POSITIVELIMIT_Z = 0.17f;
+	public static final float NAO_NEGATIVELIMIT_Z = 0.27f;
+	public static final float NAO_CENTERPOINT_Z = 0.48f;
 	
-	public static final float USER_HEIGHT = 1.72f;
+	public static float USER_HEIGHT = 1.72f;
 	public static final float NAO_HEIGHT = 0.58f;
 	
 	//Input commands
