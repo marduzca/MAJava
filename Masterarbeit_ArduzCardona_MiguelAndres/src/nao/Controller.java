@@ -38,6 +38,14 @@ public class Controller {
 	private ALRobotPosture robotPosture;
 	private ALAutonomousLife autonomousLife;
 	
+	private String armSide;
+	private float armX;
+	private float armY;
+	private float armZ;
+	private float armWX;
+	private float armWY;
+	private float armWZ;
+	
 	public static void main(String[] args) {
 		Controller controller = new Controller();
 		//controller.initialize(NAOMI_IP);
@@ -110,13 +118,13 @@ public class Controller {
 			break;
 
 		case ARM:
-			String armSide = command[1];
-			float armX = Float.parseFloat(command[4]);
-			float armY = Float.parseFloat(command[2]);
-			float armZ = Float.parseFloat(command[3]);
-			float armWX = Float.parseFloat(command[7]);
-			float armWY = Float.parseFloat(command[5]);
-			float armWZ = Float.parseFloat(command[6]);
+			armSide = command[1];
+			armX = Float.parseFloat(command[4]);
+			armY = Float.parseFloat(command[2]);
+			armZ = Float.parseFloat(command[3]);
+			armWX = Float.parseFloat(command[7]);
+			armWY = Float.parseFloat(command[5]);
+			armWZ = Float.parseFloat(command[6]);
 
 			arms.moveArm(armSide, armX, armY, armZ, armWX, armWY, armWZ);
 			break;
@@ -137,6 +145,12 @@ public class Controller {
 
 			legs.turnTo(turnTheta);
 			WALK_MOVEMENT_ACTIVE = false;
+			break;
+			
+		case POSTURE:
+			String postureName = command[1];
+			
+			robotPosture.applyPosture(postureName, 0.5f);
 			break;
 
 		case STOP:

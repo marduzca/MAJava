@@ -42,6 +42,19 @@ public class Arms {
 		this.leftArmThread.start();
 		this.rightArmThread.start();
 	}
+	
+	public void moveArm(String handSide, float x, float y, float z, float wx, float wy, float wz)
+			throws CallError, InterruptedException {
+		List<Float> newPosition6D = scaleArm6DPosition(handSide, x, y, z, wx, wy, wz);
+
+		if (handSide.equals("L")) {
+			leftArmCommands.add(newPosition6D);
+			System.out.println("LArm: " + newPosition6D.toString());
+		} else if (handSide.equals("R")) {
+			rightArmCommands.add(newPosition6D);
+			System.out.println("RArm: " + newPosition6D.toString());
+		}
+	}
 
 	public void moveHand(String handSide, String handAction) throws CallError, InterruptedException {
 		List<Float> handAngles = new ArrayList<>();
@@ -75,19 +88,6 @@ public class Arms {
 				motion.setAngles("RHand", handAngles, 0.3f);
 			}
 		}		
-	}
-
-	public void moveArm(String handSide, float x, float y, float z, float wx, float wy, float wz)
-			throws CallError, InterruptedException {
-		List<Float> newPosition6D = scaleArm6DPosition(handSide, x, y, z, wx, wy, wz);
-
-		if (handSide.equals("L")) {
-			leftArmCommands.add(newPosition6D);
-			System.out.println("LArm: " + newPosition6D.toString());
-		} else if (handSide.equals("R")) {
-			rightArmCommands.add(newPosition6D);
-			System.out.println("RArm: " + newPosition6D.toString());
-		}
 	}
 
 	private List<Float> scaleArm6DPosition(String side, float x, float y, float z, float wx, float wy, float wz) {
@@ -126,7 +126,7 @@ public class Arms {
 		if (side.equals("R")) {
 			newWX = (newWX * -1) + 90;
 		} else if (side.equals("L")) {
-			newWX = newWX - 90;
+			newWX = (newWX * -1) - 90;
 		}
 
 		if (wy > 180 && wy < 360) {

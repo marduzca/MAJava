@@ -39,4 +39,5 @@ public class GlobalVariables {
 	public static final String HAND = "HND";
 	public static final String TURN = "TRN";
 	public static final String STOP = "STP";
+	public static final String POSTURE = "PST";
 }

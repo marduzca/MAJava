@@ -15,7 +15,11 @@ public class RightArmThread extends Thread {
 					Arms.motion.positionInterpolation("RArm", 2, Arms.rightArmCommands.remove(0), 63, 1.0, true);
 				}
 			}
-		} catch (CallError | InterruptedException e) {
+		} 
+		catch(ArrayIndexOutOfBoundsException e) {
+			//Do nothing, internal irrelevant error
+		}
+		catch (CallError | InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
