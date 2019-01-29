@@ -5,25 +5,26 @@ import static utils.GlobalVariables.ARM_MOVEMENT_ACTIVE;
 import static utils.GlobalVariables.HAND;
 import static utils.GlobalVariables.INITIALIZE;
 import static utils.GlobalVariables.MOVE;
-import static utils.GlobalVariables.NAOMI_IP;
+import static utils.GlobalVariables.POSTURE;
 import static utils.GlobalVariables.SERVER_ACTIVE;
 import static utils.GlobalVariables.STOP;
 import static utils.GlobalVariables.TURN;
+import static utils.GlobalVariables.USER_HEIGHT;
+import static utils.GlobalVariables.VR_LIMIT_X;
+import static utils.GlobalVariables.VR_LIMIT_Y;
+import static utils.GlobalVariables.VR_NEGATIVELIMIT_Z;
+import static utils.GlobalVariables.VR_POSITIVELIMIT_Z;
 import static utils.GlobalVariables.WALK_MOVEMENT_ACTIVE;
-import static utils.GlobalVariables.*;
 
 import com.aldebaran.qi.Future;
 import com.aldebaran.qi.Session;
 import com.aldebaran.qi.helper.proxies.ALAutonomousLife;
-import com.aldebaran.qi.helper.proxies.ALMemory;
 import com.aldebaran.qi.helper.proxies.ALMotion;
 import com.aldebaran.qi.helper.proxies.ALRobotPosture;
-import com.aldebaran.qi.helper.proxies.ALTextToSpeech;
 
 import naoArms.Arms;
 import naoLegs.Legs;
-import server.NaoServer;
-import utils.GlobalVariables;
+import network.NaoServer;
 
 public class Controller {
 
@@ -32,12 +33,10 @@ public class Controller {
 	private NaoServer server;
 
 	private static Session session;
-	private ALMemory memory;
 	private ALMotion motion;
-	private ALTextToSpeech textToSpeech;
 	private ALRobotPosture robotPosture;
 	private ALAutonomousLife autonomousLife;
-	
+
 	private String armSide;
 	private float armX;
 	private float armY;
@@ -45,10 +44,9 @@ public class Controller {
 	private float armWX;
 	private float armWY;
 	private float armWZ;
-	
+
 	public static void main(String[] args) {
 		Controller controller = new Controller();
-		//controller.initialize(NAOMI_IP);
 		controller.startServer();
 	}
 
@@ -60,7 +58,6 @@ public class Controller {
 	}
 
 	private void startServer() {
-		// server.start();
 		server.run();
 	}
 
@@ -71,13 +68,11 @@ public class Controller {
 			fut.get();
 
 			motion = new ALMotion(session);
-			memory = new ALMemory(session);
-			textToSpeech = new ALTextToSpeech(session);
 			robotPosture = new ALRobotPosture(session);
 			autonomousLife = new ALAutonomousLife(session);
 
-			arms = new Arms(this, motion);
-			legs = new Legs(this, motion, robotPosture);
+			arms = new Arms(motion);
+			legs = new Legs(motion, robotPosture);
 
 			if (!autonomousLife.getState().equals("disabled")) {
 				autonomousLife.setState("disabled");
@@ -85,8 +80,6 @@ public class Controller {
 			}
 
 			robotPosture.applyPosture("Stand", 0.5f);
-			
-			System.out.println("Limit x: " + VR_LIMIT_X + "\nLimit y: " + VR_LIMIT_Y + "\nLimit posi z: " + VR_POSITIVELIMIT_Z + "\nLimit nega z" + VR_NEGATIVELIMIT_Z + "\nHeight: " + USER_HEIGHT);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -101,7 +94,7 @@ public class Controller {
 			VR_POSITIVELIMIT_Z = Float.parseFloat(command[3]);
 			VR_NEGATIVELIMIT_Z = Float.parseFloat(command[4]) * -1;
 			USER_HEIGHT = Float.parseFloat(command[6]);
-			
+
 			initialize("tcp://" + robotIPAddress + ":9559");
 			break;
 
@@ -146,10 +139,10 @@ public class Controller {
 			legs.turnTo(turnTheta);
 			WALK_MOVEMENT_ACTIVE = false;
 			break;
-			
+
 		case POSTURE:
 			String postureName = command[1];
-			
+
 			robotPosture.applyPosture(postureName, 0.5f);
 			break;
 

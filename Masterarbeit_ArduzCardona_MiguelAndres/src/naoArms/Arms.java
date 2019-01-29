@@ -19,19 +19,15 @@ import com.aldebaran.qi.helper.proxies.ALMotion;
 
 import utils.Util;
 
-import nao.Controller;
-
 public class Arms {
 
-	private Controller controller;
 	protected static ALMotion motion;
 	protected static CopyOnWriteArrayList<List<Float>> leftArmCommands;
 	protected static CopyOnWriteArrayList<List<Float>> rightArmCommands;
 	private LeftArmThread leftArmThread;
 	private RightArmThread rightArmThread;
 
-	public Arms(Controller controller, ALMotion motion) {
-		this.controller = controller;
+	public Arms(ALMotion motion) {
 		Arms.motion = motion;
 		leftArmCommands = new CopyOnWriteArrayList<List<Float>>();
 		rightArmCommands = new CopyOnWriteArrayList<List<Float>>();
@@ -42,23 +38,21 @@ public class Arms {
 		this.leftArmThread.start();
 		this.rightArmThread.start();
 	}
-	
+
 	public void moveArm(String handSide, float x, float y, float z, float wx, float wy, float wz)
 			throws CallError, InterruptedException {
 		List<Float> newPosition6D = scaleArm6DPosition(handSide, x, y, z, wx, wy, wz);
 
 		if (handSide.equals("L")) {
 			leftArmCommands.add(newPosition6D);
-			System.out.println("LArm: " + newPosition6D.toString());
 		} else if (handSide.equals("R")) {
 			rightArmCommands.add(newPosition6D);
-			System.out.println("RArm: " + newPosition6D.toString());
 		}
 	}
 
 	public void moveHand(String handSide, String handAction) throws CallError, InterruptedException {
 		List<Float> handAngles = new ArrayList<>();
-		
+
 		if (handSide.equals("L")) {
 
 			handAngles = Util.getAnglesFrom("LHand", motion);
@@ -87,7 +81,7 @@ public class Arms {
 				handAngles.set(0, handAngles.get(0) - Util.toFloatRadians(50));
 				motion.setAngles("RHand", handAngles, 0.3f);
 			}
-		}		
+		}
 	}
 
 	private List<Float> scaleArm6DPosition(String side, float x, float y, float z, float wx, float wy, float wz) {

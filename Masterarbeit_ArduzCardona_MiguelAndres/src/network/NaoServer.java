@@ -1,4 +1,4 @@
-package server;
+package network;
 
 import static utils.GlobalVariables.SERVER_ACTIVE;
 
@@ -33,37 +33,33 @@ public class NaoServer {
 
 				Socket connectionSocket = serverSocket.accept();
 				String command = "";
-				System.out.println("Got it and processing...");
 
 				BufferedReader inFromClient = new BufferedReader(
 						new InputStreamReader(connectionSocket.getInputStream()));
 				DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
-
-				System.out.println("Streams created...");
 
 				while ((command = inFromClient.readLine()) != null) {
 					command = command.trim();
 
 					System.out.println("Received: " + command);
 					String[] commandArray = command.split(Pattern.quote("|"));
-					
-					if(commandArray[0].equals("INI")) {
+
+					if (commandArray[0].equals("INI")) {
 						controller.runCommand(commandArray);
-						//Send back ACK
+						// Send back ACK
 						outToClient.writeByte(1);
 					}
-					if(commandArray[0].equals("STP")) {
-						//Send back ACK
+					if (commandArray[0].equals("STP")) {
+						// Send back ACK
 						outToClient.writeByte(1);
 						controller.runCommand(commandArray);
 						break;
-					}
-					else {
-						//Send back ACK
+					} else {
+						// Send back ACK
 						outToClient.writeByte(1);
 						controller.runCommand(commandArray);
 					}
-					
+
 					command = "";
 				}
 

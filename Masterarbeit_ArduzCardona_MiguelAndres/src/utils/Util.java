@@ -6,7 +6,7 @@ import java.util.List;
 import com.aldebaran.qi.helper.proxies.ALMotion;
 
 public class Util {
-	
+
 	/**
 	 * Gets the current angles of the assigned joint. Done very often in the code,
 	 * so to spare us some lines.
@@ -37,5 +37,4 @@ public class Util {
 		return (float) Math.toRadians(degree);
 
 	}
-	
 }

@@ -15,13 +15,10 @@ public class LeftArmThread extends Thread {
 					Arms.motion.positionInterpolation("LArm", 2, Arms.leftArmCommands.remove(0), 63, 1.0, true);
 				}
 			}
-		} 
-		catch(ArrayIndexOutOfBoundsException e) {
-			//Do nothing, internal irrelevant error
-		}
-		catch (CallError | InterruptedException e) {
+		} catch (ArrayIndexOutOfBoundsException e) {
+			// Do nothing, internal irrelevant error
+		} catch (CallError | InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
-	
 }
