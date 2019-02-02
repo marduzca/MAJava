@@ -22,14 +22,23 @@ import com.aldebaran.qi.helper.proxies.ALAutonomousLife;
 import com.aldebaran.qi.helper.proxies.ALMotion;
 import com.aldebaran.qi.helper.proxies.ALRobotPosture;
 
-import naoArms.Arms;
-import naoLegs.Legs;
+import naoArms.ArmMovementHandler;
+import naoLegs.NavigationHandler;
 import network.NaoServer;
 
+/**
+ * Controller is the most important class in the remote system. It serves
+ * basically as the interface that connects the requests with the actual
+ * functionality of the robot. It also takes care of initializing the system and
+ * establishing the connection to the robot.
+ * 
+ * @author Miguel Arduz
+ *
+ */
 public class Controller {
 
-	private Arms arms;
-	private Legs legs;
+	private ArmMovementHandler armMovements;
+	private NavigationHandler navigation;
 	private NaoServer server;
 
 	private static Session session;
@@ -50,17 +59,31 @@ public class Controller {
 		controller.startServer();
 	}
 
-	// Random test comment
+	/**
+	 * Constructor that enables the flag for the server and for the arm threads to
+	 * run.
+	 */
 	public Controller() {
 		server = new NaoServer(this);
 		SERVER_ACTIVE = true;
 		ARM_MOVEMENT_ACTIVE = true;
 	}
 
+	/**
+	 * Starts the server loop.
+	 */
 	private void startServer() {
 		server.run();
 	}
 
+	/**
+	 * Initializes the whole system by first establishing the connection with the
+	 * robot, initializing the required robot modules and then starting the rest of
+	 * the services of the system. The autonomous life status of the robot is also
+	 * disabled if necessary.
+	 * 
+	 * @param IP_Address IP address of the robot to connect to
+	 */
 	private void initialize(String IP_Address) {
 		try {
 			session = new Session();
@@ -71,8 +94,8 @@ public class Controller {
 			robotPosture = new ALRobotPosture(session);
 			autonomousLife = new ALAutonomousLife(session);
 
-			arms = new Arms(motion);
-			legs = new Legs(motion, robotPosture);
+			armMovements = new ArmMovementHandler(motion);
+			navigation = new NavigationHandler(motion, robotPosture);
 
 			if (!autonomousLife.getState().equals("disabled")) {
 				autonomousLife.setState("disabled");
@@ -85,9 +108,24 @@ public class Controller {
 		}
 	}
 
+	/**
+	 * This method plays the part of the interface between the commands and the
+	 * actual functionality of the robot. It receives a command that is already
+	 * filtered and partitioned into its relevant elements and depending on the type
+	 * of the command, the correspondent module and functionality is called. The
+	 * first element contains the information about the type of command, while the
+	 * rest of the elements have the concrete information required for that command.
+	 * 
+	 * @param command Command from the client, already partitioned with each
+	 *                relevant info as one element of the array
+	 * @throws Exception Any type of exception that can come back from the other
+	 *                   modules that run the specific commands and in case an
+	 *                   invalid command arrives
+	 */
 	public void runCommand(String[] command) throws Exception {
 		switch (command[0]) {
 		case INITIALIZE:
+			// Set the given values and initialize the system
 			String robotIPAddress = command[1];
 			VR_LIMIT_X = Float.parseFloat(command[5]);
 			VR_LIMIT_Y = Float.parseFloat(command[2]);
@@ -99,18 +137,20 @@ public class Controller {
 			break;
 
 		case MOVE:
+			// Pass the values to the walking module to handle the navigation command
 			float walkX = Float.parseFloat(command[2]);
 			float walkY = Float.parseFloat(command[1]);
 
 			WALK_MOVEMENT_ACTIVE = true;
 			// Clear old and unused arm commands
-			arms.clearArmCommandsList();
+			armMovements.clearArmCommandsList();
 
-			legs.walkTo(walkX, walkY);
+			navigation.walkTo(walkX, walkY);
 			WALK_MOVEMENT_ACTIVE = false;
 			break;
 
 		case ARM:
+			// Pass the values to the arm movement module to handle the arm command
 			armSide = command[1];
 			armX = Float.parseFloat(command[4]);
 			armY = Float.parseFloat(command[2]);
@@ -119,38 +159,42 @@ public class Controller {
 			armWY = Float.parseFloat(command[5]);
 			armWZ = Float.parseFloat(command[6]);
 
-			arms.moveArm(armSide, armX, armY, armZ, armWX, armWY, armWZ);
+			armMovements.moveArm(armSide, armX, armY, armZ, armWX, armWY, armWZ);
 			break;
 
 		case HAND:
+			// Pass the values to the arm movement module to handle the arm command
 			String handSide = command[1];
 			String handAction = command[2];
 
-			arms.moveHand(handSide, handAction);
+			armMovements.moveHand(handSide, handAction);
 			break;
 
 		case TURN:
+			// Pass the values to the walking module to handle the navigation command
 			float turnTheta = Float.parseFloat(command[1]);
 
 			WALK_MOVEMENT_ACTIVE = true;
 			// Clear old and unused arm commands
-			arms.clearArmCommandsList();
+			armMovements.clearArmCommandsList();
 
-			legs.turnTo(turnTheta);
+			navigation.turnTo(turnTheta);
 			WALK_MOVEMENT_ACTIVE = false;
 			break;
 
 		case POSTURE:
+			// Change the posture to apply the given on
 			String postureName = command[1];
 
 			robotPosture.applyPosture(postureName, 0.5f);
 			break;
 
 		case STOP:
+			// Stop the system by desabling the flag for the server and for the arm threads
 			robotPosture.applyPosture("Stand", 0.5f);
 			SERVER_ACTIVE = false;
 			ARM_MOVEMENT_ACTIVE = false;
-			// server.join();
+
 			break;
 
 		default:

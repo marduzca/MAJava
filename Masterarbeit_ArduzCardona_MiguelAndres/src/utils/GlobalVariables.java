@@ -1,33 +1,26 @@
 package utils;
 
 /**
- * GlobalVariables is the connector between both Master and Client Threads. It
- * contains variables that can be updated from both sides and can therefore
- * allow their interaction.
+ * GlobalVariables contains variables that are relevant for the system and that
+ * are access from several points in the infrastructure and therefore must be
+ * reachable from everywhere.
  * 
  * @author Miguel Arduz
  */
 public class GlobalVariables {
+	// Flags for server and threads
 	public static boolean SERVER_ACTIVE;
 	public static boolean ARM_MOVEMENT_ACTIVE;
 	public static boolean WALK_MOVEMENT_ACTIVE;
 
+	// Measurement data incoming from the client
 	public static float VR_LIMIT_X;
 	public static float VR_LIMIT_Y;
 	public static float VR_POSITIVELIMIT_Z;
 	public static float VR_NEGATIVELIMIT_Z;
 	public static float USER_HEIGHT;
 
-	public static final float NAO_LIMIT_X = 0.21f;
-	public static final float NAO_LIMIT_Y = 0.32f;
-	public static final float NAO_POSITIVELIMIT_Z = 0.17f;
-	public static final float NAO_NEGATIVELIMIT_Z = 0.27f;
-	public static final float NAO_CENTERPOINT_Z = 0.48f;
-	public static final float NAO_HEIGHT = 0.58f;
-
-	public static boolean SCALED_WALK = false;
-
-	// Input commands
+	// Possible input command types
 	public static final String INITIALIZE = "INI";
 	public static final String MOVE = "MOV";
 	public static final String ARM = "ARM";
